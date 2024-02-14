@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Public Dictionary</string>
+    <string name="count_phrases">%d phrases</string>
+    <string name="preview_topic_phrase">%s …</string>
 </resources>
