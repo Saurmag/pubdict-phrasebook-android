@@ -3,4 +3,5 @@
     <string name="count_phrases">%d phrases</string>
     <string name="preview_topic_phrase">%s …</string>
     <string name="topics">Topics</string>
+    <string name="favourite_icon">Favourite Icon</string>
 </resources>
