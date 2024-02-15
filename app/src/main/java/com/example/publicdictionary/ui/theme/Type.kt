@@ -14,7 +14,8 @@ val AbrilFatface = FontFamily(
 
 val Montserrat = FontFamily(
     Font(R.font.montserrat_regular),
-    Font(R.font.montserrat_bold, FontWeight.Bold)
+    Font(R.font.montserrat_bold, FontWeight.Bold),
+    Font(R.font.montserrat_italic, FontWeight.Thin)
 )
 
 val Typography = Typography(
