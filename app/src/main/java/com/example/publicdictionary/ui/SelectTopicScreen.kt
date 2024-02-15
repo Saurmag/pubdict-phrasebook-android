@@ -1,19 +1,23 @@
 package com.example.publicdictionary.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.publicdictionary.R
 import com.example.publicdictionary.mockdata.DataSource
 import com.example.publicdictionary.mockdata.mockmodel.LanguagePhrasebook
@@ -28,6 +32,20 @@ fun SelectTopicScreen(
     Column(
         modifier = modifier
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.japanesephrasebooktheme),
+            contentDescription = null
+        )
+        Text(
+            text = stringResource(id = R.string.topics),
+            style = MaterialTheme.typography.displayLarge,
+            modifier = Modifier
+                .padding(
+                    start = dimensionResource(id = R.dimen.padding_small),
+                    top = dimensionResource(id = R.dimen.padding_small),
+                    bottom = dimensionResource(id = R.dimen.padding_small)
+                )
+        )
         TopicList(topicList = languagePhrasebook.topics)
     }
 }
@@ -59,6 +77,7 @@ fun TopicItem(
     modifier: Modifier = Modifier
 ) {
     Card(
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         modifier = modifier.fillMaxWidth()
     ) {
         Column(
@@ -88,7 +107,7 @@ fun TopicItem(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun SelectTopicScreenPreview() {
     val japanesePhrasebook = DataSource.japanesePhrasebook
