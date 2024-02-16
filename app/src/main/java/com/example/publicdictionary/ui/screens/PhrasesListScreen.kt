@@ -1,17 +1,20 @@
 package com.example.publicdictionary.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,17 +36,50 @@ import com.example.publicdictionary.ui.theme.PublicDictionaryTheme
 
 @Composable
 fun PhrasesListScreen(
+    topicTitle: String,
     phrases: List<Phrase>,
+    onAlphaSortIconClick: () -> Unit,
+
     modifier: Modifier = Modifier
 ) {
-    Column {
-        LazyColumn(modifier = modifier) {
+    Column(modifier = modifier) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
+        ) {
+            Text(
+                text = topicTitle,
+                style = MaterialTheme.typography.displayLarge,
+                modifier = Modifier.weight(4f)
+            )
+            IconButton(
+                onClick = onAlphaSortIconClick,
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.alpha_sort_icon),
+                    contentDescription = stringResource(
+                        id = R.string.alpha_sort_icon,
+                    ),
+                )
+            }
+        }
+        SearchPhrase(
+            onSearchPhrase = {},
+            onSearchIconClick = {},
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.padding_small))
+        )
+        LazyColumn(modifier = Modifier.fillMaxWidth()) {
             items(phrases) { phrase ->
                 PhrasesListItem(
                     phrase = phrase.text,
                     phraseInRequiredLanguage = phrase.textTranslation,
                     phraseInEnglishTransliteration = phrase.enTextTransliteration,
-                    onIconClick = { /*TODO*/ }
+                    onIconClick = {},
+                    onItemClick = {}
                 )
             }
         }
@@ -56,58 +92,100 @@ fun PhrasesListItem(
     phraseInRequiredLanguage: String,
     phraseInEnglishTransliteration: String,
     onIconClick: () -> Unit,
+    onItemClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(modifier = modifier.fillMaxWidth()) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = modifier
+            .clickable(onClick = onItemClick)
+            .padding(dimensionResource(id = R.dimen.padding_small))
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier.weight(4f)
         ) {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier.weight(4f)
-            ) {
-                Text(
-                    text = phrase,
-                    style = MaterialTheme.typography.displayMedium,
-                    textAlign = TextAlign.Justify
-                )
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                fontFamily = Montserrat,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 14.sp
-                            )
-                        ) {
-                            append(phraseInRequiredLanguage)
-                            append(".  ")
-                        }
-                        withStyle(
-                            style = SpanStyle(
-                                fontFamily = Montserrat,
-                                fontWeight = FontWeight.Thin,
-                                fontSize = 14.sp
-                            )
-                        ) {
-                            append(phraseInEnglishTransliteration)
-                        }
-                    },
-                    textAlign = TextAlign.Justify
-                )
-            }
-            IconButton(
-                onClick = onIconClick,
-                modifier = Modifier.weight(1f)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_favorite_border_24),
-                    contentDescription = stringResource(id = R.string.favourite_icon)
-                )
-            }
+            Text(
+                text = phrase,
+                style = MaterialTheme.typography.displayMedium,
+                textAlign = TextAlign.Justify
+            )
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily = Montserrat,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 14.sp
+                        )
+                    ) {
+                        append(phraseInRequiredLanguage)
+                        append(".  ")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily = Montserrat,
+                            fontWeight = FontWeight.Thin,
+                            fontSize = 14.sp
+                        )
+                    ) {
+                        append(phraseInEnglishTransliteration)
+                    }
+                },
+                textAlign = TextAlign.Justify
+            )
         }
+        IconButton(
+            onClick = onIconClick,
+            modifier = Modifier.weight(1f)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.favourite_icon),
+                contentDescription = stringResource(id = R.string.favourite_icon)
+            )
+        }
+    }
+}
+
+@Composable
+fun SearchPhrase(
+    onSearchPhrase: (String) -> Unit,
+    onSearchIconClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        IconButton(onClick = onSearchIconClick) {
+            Icon(
+                painter = painterResource(id = R.drawable.search_icon),
+                contentDescription = stringResource(id = R.string.search_icon)
+            )
+        }
+        TextField(
+            value = stringResource(id = R.string.default_text_on_search_phrase),
+            onValueChange = onSearchPhrase,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary
+            ),
+            textStyle = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.fillMaxWidth().weight(8f)
+        )
+        Spacer(modifier = Modifier.weight(1f))
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SearchPhrasePreview() {
+    PublicDictionaryTheme {
+        SearchPhrase(
+            onSearchPhrase = {},
+            onSearchIconClick = {}
+        )
     }
 }
 
@@ -115,7 +193,11 @@ fun PhrasesListItem(
 @Composable
 fun PhrasesListScreenPreview() {
     PublicDictionaryTheme {
-        val phrases = DataSource.japanesePhrasebook.topics[0].phrases
-        PhrasesListScreen(phrases = phrases)
+        val topic = DataSource.japanesePhrasebook.topics[0]
+        PhrasesListScreen(
+            topicTitle = topic.title,
+            phrases = topic.phrases,
+            onAlphaSortIconClick = {}
+        )
     }
 }
