@@ -18,6 +18,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -168,8 +169,8 @@ fun SearchPhrase(
             value = stringResource(id = R.string.default_text_on_search_phrase),
             onValueChange = onSearchPhrase,
             colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary
+                focusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = Color.Transparent
             ),
             textStyle = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.fillMaxWidth().weight(8f)
