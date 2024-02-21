@@ -1,8 +1,8 @@
 package com.example.publicdictionary.mockdata
 
-import com.example.publicdictionary.mockdata.mockmodel.LanguagePhrasebook
-import com.example.publicdictionary.mockdata.mockmodel.Phrase
-import com.example.publicdictionary.mockdata.mockmodel.Topic
+import com.example.publicdictionary.ui.model.Phrasebook
+import com.example.publicdictionary.ui.model.Phrase
+import com.example.publicdictionary.ui.model.Topic
 
 object DataSource {
     private val japaneseBasicTopicPhrasesList: List<Phrase> = List(10) {
@@ -35,17 +35,20 @@ object DataSource {
     private val japaneseTopics: List<Topic> = listOf(
         Topic(
             title = "Basic",
-            phrases = japaneseBasicTopicPhrasesList
+            phrases = japaneseBasicTopicPhrasesList,
+            countPhrases = 100
         ),
         Topic(
             title = "Numbers",
-            phrases = japaneseNumberTopicPhrasesList
+            phrases = japaneseNumberTopicPhrasesList,
+            countPhrases = 100
         ),
         Topic(
             title = "Questions",
-            japaneseQuestionsTopicPhrasesList
+            japaneseQuestionsTopicPhrasesList,
+            countPhrases = 100
         )
     )
 
-    val japanesePhrasebook = LanguagePhrasebook(japaneseTopics)
+    val japanesePhrasebook = Phrasebook(japaneseTopics)
 }

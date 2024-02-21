@@ -1,5 +1,6 @@
 package com.example.publicdictionary.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,12 +19,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.publicdictionary.R
 import com.example.publicdictionary.mockdata.DataSource
-import com.example.publicdictionary.mockdata.mockmodel.Topic
+import com.example.publicdictionary.ui.model.Topic
 import com.example.publicdictionary.ui.theme.PublicDictionaryTheme
 
 @Composable
 fun SelectTopicScreen(
     topics: List<Topic>,
+    onTopicClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -45,8 +47,9 @@ fun SelectTopicScreen(
             items(topics) { topic ->
                 TopicItem(
                     title = topic.title,
-                    countPhrase = topic.phrases.size,
+                    countPhrase = topic.countPhrases,
                     previewWord = topic.phrases[0].textTranslation,
+                    onTopicClick = onTopicClick,
                     modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
                 )
             }
@@ -59,11 +62,14 @@ fun TopicItem(
     title: String,
     countPhrase: Int,
     previewWord: String,
+    onTopicClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .clickable(onClick = onTopicClick)
+            .fillMaxWidth()
     ) {
         Column(
             horizontalAlignment = Alignment.Start,
@@ -98,7 +104,8 @@ fun SelectTopicScreenPreview() {
     val topics = DataSource.japanesePhrasebook.topics
     PublicDictionaryTheme {
         SelectTopicScreen(
-            topics
+            topics,
+            onTopicClick = {}
         )
     }
 }

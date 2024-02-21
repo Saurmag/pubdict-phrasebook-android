@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.example.publicdictionary.R
 import com.example.publicdictionary.mockdata.DataSource
-import com.example.publicdictionary.mockdata.mockmodel.Phrase
+import com.example.publicdictionary.ui.model.Phrase
 import com.example.publicdictionary.ui.theme.Montserrat
 import com.example.publicdictionary.ui.theme.PublicDictionaryTheme
 
@@ -40,7 +40,10 @@ fun PhrasesListScreen(
     topicTitle: String,
     phrases: List<Phrase>,
     onAlphaSortIconClick: () -> Unit,
-
+    onItemClick: () -> Unit,
+    onIconClick: () -> Unit,
+    onSearchPhrase: (String) -> Unit,
+    onSearchIconClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -67,8 +70,8 @@ fun PhrasesListScreen(
             }
         }
         SearchPhrase(
-            onSearchPhrase = {},
-            onSearchIconClick = {},
+            onSearchPhrase = onSearchPhrase,
+            onSearchIconClick = onSearchIconClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(id = R.dimen.padding_small))
@@ -79,8 +82,8 @@ fun PhrasesListScreen(
                     phrase = phrase.text,
                     phraseInRequiredLanguage = phrase.textTranslation,
                     phraseInEnglishTransliteration = phrase.enTextTransliteration,
-                    onIconClick = {},
-                    onItemClick = {}
+                    onIconClick = onIconClick,
+                    onItemClick = onItemClick
                 )
             }
         }
@@ -198,7 +201,11 @@ fun PhrasesListScreenPreview() {
         PhrasesListScreen(
             topicTitle = topic.title,
             phrases = topic.phrases,
-            onAlphaSortIconClick = {}
+            onAlphaSortIconClick = {},
+            onItemClick = {},
+            onSearchPhrase = {},
+            onIconClick = {},
+            onSearchIconClick = {}
         )
     }
 }

@@ -9,5 +9,9 @@
     <string name="default_text_on_search_phrase">Search…</string>
     <string name="ipa">ipa: </string>
     <string name="en">en: </string>
+    <string name="phrase">phrase: %s</string>
     <string name="slash">/</string>
+    <string name="japanese">JAPANESE</string>
+    <string name="lezgin">LEZGHIAN</string>
+    <string name="phrasebook">PHRASEBOOK</string>
 </resources>

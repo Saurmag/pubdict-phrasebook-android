@@ -1,4 +1,4 @@
-package com.example.publicdictionary.mockdata.mockmodel
+package com.example.publicdictionary.ui.model
 
 data class Phrase(
     val text: String,
