@@ -5,9 +5,11 @@ import com.example.publicdictionary.data.AppContainer
 import com.example.publicdictionary.data.DefaultAppContainer
 
 class PublicDictionaryApplication : Application() {
-    lateinit var container: AppContainer
+    private var _container: AppContainer? = null
+    val container
+        get() = checkNotNull(_container)
     override fun onCreate() {
         super.onCreate()
-        container = DefaultAppContainer()
+        _container = DefaultAppContainer()
     }
 }

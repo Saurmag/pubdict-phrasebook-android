@@ -12,8 +12,6 @@ class DefaultAppContainer : AppContainer{
 
     private val baseUrl = "http://staging-api.publicdictionary.org/"
 
-
-
     private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
         .addConverterFactory(MoshiConverterFactory.create())

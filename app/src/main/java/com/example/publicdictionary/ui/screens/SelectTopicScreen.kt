@@ -11,64 +11,82 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.publicdictionary.R
-import com.example.publicdictionary.mockdata.DataSource
 import com.example.publicdictionary.ui.model.Topic
-import com.example.publicdictionary.ui.theme.PublicDictionaryTheme
+import com.example.publicdictionary.ui.navigation.NavRoutes
+import com.example.publicdictionary.ui.navigation.TopicInput
 
 @Composable
 fun SelectTopicScreen(
-    topics: List<Topic>,
-    onTopicClick: () -> Unit,
+    viewModel: PhrasebookViewModel,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-    ) {
-        Text(
-            text = stringResource(id = R.string.topics),
-            style = MaterialTheme.typography.displayLarge,
-            modifier = Modifier
-                .padding(
-                    start = dimensionResource(id = R.dimen.padding_small),
-                    top = dimensionResource(id = R.dimen.padding_small),
-                    bottom = dimensionResource(id = R.dimen.padding_small)
-                )
-        )
-        LazyColumn(
-            modifier = modifier
-        ) {
-            items(topics) { topic ->
-                TopicItem(
-                    title = topic.title,
-                    countPhrase = topic.countPhrases,
-                    previewWord = topic.phrases[0].textTranslation,
-                    onTopicClick = onTopicClick,
-                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
-                )
+    viewModel.phrasebookUiState.collectAsState().value.let { state ->
+        when(state.isLoading) {
+            true -> {
+                viewModel.getPhrasebook()
+            }
+            false -> {
+                val phrasebook = state.phrasebook
+                if (phrasebook == null) {
+                    viewModel.getPhrasebook()
+                } else {
+                    Column(
+                        modifier = modifier
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.topics),
+                            style = MaterialTheme.typography.displayLarge,
+                            modifier = Modifier
+                                .padding(
+                                    start = dimensionResource(id = R.dimen.padding_small),
+                                    top = dimensionResource(id = R.dimen.padding_small),
+                                    bottom = dimensionResource(id = R.dimen.padding_small)
+                                )
+                        )
+                        LazyColumn(
+                            modifier = modifier
+                        ) {
+                            items(phrasebook.topics) { topic ->
+                                TopicItem(
+                                    topic = topic,
+                                    onTopicClick = {
+                                        navController.navigate(
+                                            NavRoutes.Topic.routeForTopic(
+                                                TopicInput(topicId = it.id)
+                                            )
+                                        )
+                                    },
+                                    modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
+
     }
 }
 
 @Composable
 fun TopicItem(
-    title: String,
-    countPhrase: Int,
-    previewWord: String,
-    onTopicClick: () -> Unit,
+    topic: Topic,
+    onTopicClick: (Topic) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         modifier = modifier
-            .clickable(onClick = onTopicClick)
+            .clickable(onClick = { onTopicClick(topic) })
             .fillMaxWidth()
     ) {
         Column(
@@ -76,36 +94,24 @@ fun TopicItem(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
         ) {
             Text(
-                text = title,
+                text = topic.title,
                 style = MaterialTheme.typography.displayLarge,
                 modifier = Modifier.padding(
                     bottom = dimensionResource(id = R.dimen.padding_small)
                 )
             )
             Text(
-                text = stringResource(id = R.string.count_phrases, countPhrase),
+                text = stringResource(id = R.string.count_phrases, topic.countPhrases),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_small))
             )
             Text(
                 text = stringResource(
                     R.string.preview_topic_phrase,
-                    previewWord
+                    topic.phrases[0].enTextTransliteration
                 ),
                 style = MaterialTheme.typography.labelSmall
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SelectTopicScreenPreview() {
-    val topics = DataSource.japanesePhrasebook.topics
-    PublicDictionaryTheme {
-        SelectTopicScreen(
-            topics,
-            onTopicClick = {}
-        )
     }
 }

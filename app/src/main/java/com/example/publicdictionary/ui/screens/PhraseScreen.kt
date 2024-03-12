@@ -16,18 +16,17 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.publicdictionary.R
-import com.example.publicdictionary.mockdata.DataSource
-import com.example.publicdictionary.ui.model.Phrase
+import com.example.publicdictionary.ui.navigation.PhraseInput
 import com.example.publicdictionary.ui.theme.Montserrat
-import com.example.publicdictionary.ui.theme.PublicDictionaryTheme
 
 @Composable
 fun PhraseScreen(
-    phrase: Phrase,
+    viewModel: PhrasebookViewModel,
+    phraseInput: PhraseInput,
     modifier: Modifier = Modifier
 ) {
+    val phrase = viewModel.loadPhrase(phraseId = phraseInput.phraseId)
     val context = LocalContext.current
     Card(
         colors = CardDefaults.cardColors(
@@ -98,14 +97,5 @@ fun PhraseScreen(
                 bottom = dimensionResource(id = R.dimen.padding_small)
             )
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PhraseScreenPreview() {
-    PublicDictionaryTheme {
-        val phrase = DataSource.japanesePhrasebook.topics[0].phrases[0]
-        PhraseScreen(phrase = phrase)
     }
 }

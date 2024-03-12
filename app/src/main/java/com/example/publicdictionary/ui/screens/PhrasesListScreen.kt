@@ -27,25 +27,23 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.publicdictionary.R
-import com.example.publicdictionary.mockdata.DataSource
 import com.example.publicdictionary.ui.model.Phrase
+import com.example.publicdictionary.ui.navigation.NavRoutes
+import com.example.publicdictionary.ui.navigation.PhraseInput
+import com.example.publicdictionary.ui.navigation.TopicInput
 import com.example.publicdictionary.ui.theme.Montserrat
-import com.example.publicdictionary.ui.theme.PublicDictionaryTheme
 
 @Composable
 fun PhrasesListScreen(
-    topicTitle: String,
-    phrases: List<Phrase>,
-    onAlphaSortIconClick: () -> Unit,
-    onItemClick: () -> Unit,
-    onIconClick: () -> Unit,
-    onSearchPhrase: (String) -> Unit,
-    onSearchIconClick: () -> Unit,
+    viewModel: PhrasebookViewModel,
+    topicInput: TopicInput,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
+    val topic = viewModel.loadTopic(topicInput.topicId)
     Column(modifier = modifier) {
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -53,12 +51,12 @@ fun PhrasesListScreen(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
         ) {
             Text(
-                text = topicTitle,
+                text = topic.title,
                 style = MaterialTheme.typography.displayLarge,
                 modifier = Modifier.weight(4f)
             )
             IconButton(
-                onClick = onAlphaSortIconClick,
+                onClick = {},
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(
@@ -70,20 +68,22 @@ fun PhrasesListScreen(
             }
         }
         SearchPhrase(
-            onSearchPhrase = onSearchPhrase,
-            onSearchIconClick = onSearchIconClick,
+            onSearchPhrase = {},
+            onSearchIconClick = {},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(id = R.dimen.padding_small))
         )
         LazyColumn(modifier = Modifier.fillMaxWidth()) {
-            items(phrases) { phrase ->
+            items(topic.phrases) { phrase ->
                 PhrasesListItem(
-                    phrase = phrase.text,
-                    phraseInRequiredLanguage = phrase.textTranslation,
-                    phraseInEnglishTransliteration = phrase.enTextTransliteration,
-                    onIconClick = onIconClick,
-                    onItemClick = onItemClick
+                    phrase = phrase,
+                    onIconClick = {},
+                    onPhraseClick = {
+                        navController.navigate(
+                            NavRoutes.Phrase.routeForPhrase(PhraseInput(it.id))
+                        )
+                    }
                 )
             }
         }
@@ -92,17 +92,15 @@ fun PhrasesListScreen(
 
 @Composable
 fun PhrasesListItem(
-    phrase: String,
-    phraseInRequiredLanguage: String,
-    phraseInEnglishTransliteration: String,
+    phrase: Phrase,
     onIconClick: () -> Unit,
-    onItemClick: () -> Unit,
+    onPhraseClick: (Phrase) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         horizontalArrangement = Arrangement.Center,
         modifier = modifier
-            .clickable(onClick = onItemClick)
+            .clickable(onClick = { onPhraseClick(phrase) })
             .padding(dimensionResource(id = R.dimen.padding_small))
     ) {
         Column(
@@ -111,7 +109,7 @@ fun PhrasesListItem(
             modifier = Modifier.weight(4f)
         ) {
             Text(
-                text = phrase,
+                text = phrase.text,
                 style = MaterialTheme.typography.displayMedium,
                 textAlign = TextAlign.Justify
             )
@@ -124,7 +122,7 @@ fun PhrasesListItem(
                             fontSize = 14.sp
                         )
                     ) {
-                        append(phraseInRequiredLanguage)
+                        append(phrase.enTextTransliteration)
                         append(".  ")
                     }
                     withStyle(
@@ -134,7 +132,7 @@ fun PhrasesListItem(
                             fontSize = 14.sp
                         )
                     ) {
-                        append(phraseInEnglishTransliteration)
+                        append(phrase.ipaTextTransliteration)
                     }
                 },
                 textAlign = TextAlign.Justify
@@ -176,36 +174,10 @@ fun SearchPhrase(
                 unfocusedContainerColor = Color.Transparent
             ),
             textStyle = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.fillMaxWidth().weight(8f)
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(8f)
         )
         Spacer(modifier = Modifier.weight(1f))
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SearchPhrasePreview() {
-    PublicDictionaryTheme {
-        SearchPhrase(
-            onSearchPhrase = {},
-            onSearchIconClick = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PhrasesListScreenPreview() {
-    PublicDictionaryTheme {
-        val topic = DataSource.japanesePhrasebook.topics[0]
-        PhrasesListScreen(
-            topicTitle = topic.title,
-            phrases = topic.phrases,
-            onAlphaSortIconClick = {},
-            onItemClick = {},
-            onSearchPhrase = {},
-            onIconClick = {},
-            onSearchIconClick = {}
-        )
     }
 }

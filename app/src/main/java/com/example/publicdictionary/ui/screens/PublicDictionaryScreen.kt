@@ -1,6 +1,5 @@
 package com.example.publicdictionary.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,13 +29,25 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.publicdictionary.R
-import com.example.publicdictionary.ui.model.Phrasebook
+import com.example.publicdictionary.ui.navigation.NavRoutes
 import com.example.publicdictionary.ui.theme.PublicDictionaryTheme
 
-enum class PublicDictionaryScreen {
-    SelectTopic,
-    SelectPhrase,
-    Phrase
+@Composable
+fun PublicDictionaryApp(
+    navController: NavHostController
+) {
+    Scaffold(
+        topBar = {
+            PublicDictionaryAppBar(onMenuIconClick = {})
+        }
+    ) { innerPadding ->
+        val viewModel: PhrasebookViewModel = viewModel(factory = PhrasebookViewModel.Factory)
+        PhrasebookNavigation(
+            viewModel = viewModel,
+            navController = navController,
+            modifier = Modifier.padding(innerPadding)
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,77 +95,45 @@ fun PublicDictionaryAppBar(
 }
 
 @Composable
-fun PublicDictionaryApp(
-    navController: NavHostController = rememberNavController()
-) {
-    Scaffold(
-        topBar = {
-            PublicDictionaryAppBar(onMenuIconClick = {})
-        }
-    ) { innerPadding ->
-        val viewModel: PhrasebookViewModel = viewModel(factory = PhrasebookViewModel.Factory)
-        val uiState = viewModel.phrasebookUiState
-        Log.d("PUBLIC_DICTIONARY_SCREEN", "${viewModel.phrasebookUiState.phrasebook}")
-        when(uiState.isLoading) {
-            true -> viewModel.getPhrasebook()
-            false -> {
-                if (uiState.phrasebook == null) {
-                    viewModel.getPhrasebook()
-                } else {
-                    PhrasebookNavigation(
-                        phrasebook = uiState.phrasebook,
-                        navController = navController,
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun PhrasebookNavigation(
-    phrasebook: Phrasebook,
+    viewModel: PhrasebookViewModel,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     NavHost(
         navController = navController,
-        startDestination = PublicDictionaryScreen.SelectTopic.name,
+        startDestination = NavRoutes.TopicList.routes,
         modifier = modifier
     ) {
         composable(
-            route = PublicDictionaryScreen.SelectTopic.name
+            route = NavRoutes.TopicList.routes
         ) {
             SelectTopicScreen(
-                topics = phrasebook.topics,
-                onTopicClick = {
-                    navController.navigate(route = PublicDictionaryScreen.SelectPhrase.name)
-                },
+                viewModel = viewModel,
+                navController = navController,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(dimensionResource(id = R.dimen.padding_small))
             )
         }
         composable(
-            route = PublicDictionaryScreen.SelectPhrase.name
+            route = NavRoutes.Topic.routes,
+            arguments = NavRoutes.Topic.arguments
         ) {
             PhrasesListScreen(
-                topicTitle = phrasebook.topics[0].title,
-                phrases = phrasebook.topics[0].phrases,
-                onAlphaSortIconClick = {},
-                onItemClick = {
-                    navController.navigate(route = PublicDictionaryScreen.Phrase.name)
-                },
-                onSearchIconClick = {},
-                onIconClick = {},
-                onSearchPhrase = {}
+                viewModel = viewModel,
+                topicInput = NavRoutes.Topic.fromEntry(it),
+                navController = navController
             )
         }
         composable(
-            route = PublicDictionaryScreen.Phrase.name
+            route = NavRoutes.Phrase.routes,
+            arguments = NavRoutes.Phrase.arguments
         ) {
-            PhraseScreen(phrase = phrasebook.topics[0].phrases[0])
+            PhraseScreen(
+                viewModel = viewModel,
+                phraseInput = NavRoutes.Phrase.fromEntry(it)
+            )
         }
     }
 }
@@ -163,6 +142,7 @@ fun PhrasebookNavigation(
 @Composable
 fun PublicDictionaryAppPreview(){
     PublicDictionaryTheme {
-        PublicDictionaryApp()
+        val navController = rememberNavController()
+        PublicDictionaryApp(navController)
     }
 }

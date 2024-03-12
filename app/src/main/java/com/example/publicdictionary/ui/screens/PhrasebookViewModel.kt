@@ -1,9 +1,5 @@
 package com.example.publicdictionary.ui.screens
 
-import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -12,13 +8,17 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.publicdictionary.PublicDictionaryApplication
 import com.example.publicdictionary.data.PhrasebookRepository
+import com.example.publicdictionary.ui.model.Phrase
 import com.example.publicdictionary.ui.model.Phrasebook
+import com.example.publicdictionary.ui.model.Topic
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import okio.IOException
-import retrofit2.HttpException
 
 data class PhrasebookUiState(
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
+    val isError: Boolean = false,
     val phrasebook: Phrasebook? = null
 )
 
@@ -26,8 +26,8 @@ class PhrasebookViewModel(
     private val phrasebookRepository: PhrasebookRepository
 ) : ViewModel() {
 
-    var phrasebookUiState by mutableStateOf(PhrasebookUiState())
-        private set
+    private val _phrasebookUiState = MutableStateFlow(PhrasebookUiState())
+    val phrasebookUiState: StateFlow<PhrasebookUiState> = _phrasebookUiState.asStateFlow()
 
     init {
         getPhrasebook()
@@ -35,17 +35,33 @@ class PhrasebookViewModel(
 
     fun getPhrasebook() {
         viewModelScope.launch {
-            phrasebookUiState = PhrasebookUiState()
-            phrasebookUiState = try {
-                PhrasebookUiState(phrasebook = phrasebookRepository.getPhrasebook())
-            } catch (e: IOException) {
-                Log.e("YOUR_APP_LOG_TAG", "I got an error", e)
-                PhrasebookUiState()
-            } catch (e: HttpException) {
-                Log.e("YOUR_APP_LOG_TAG", "I got an error", e)
-                PhrasebookUiState()
+            phrasebookRepository.getPhrasebook().collect {
+                _phrasebookUiState.value = PhrasebookUiState(
+                    isLoading = false,
+                    phrasebook = it
+                )
             }
         }
+    }
+
+    fun loadTopic(topicId: Int): Topic {
+        val topicList = phrasebookUiState.value.phrasebook?.topics ?: listOf()
+        var _topic: Topic? = null
+        for (topic in topicList) {
+            if (topic.id == topicId) _topic = topic
+        }
+        return checkNotNull(_topic)
+    }
+
+    fun loadPhrase(phraseId: Int): Phrase {
+        val phrasesList = phrasebookUiState.value.phrasebook?.topics?.flatMap {
+            it.phrases
+        } ?: listOf()
+        var _phrase: Phrase? = null
+        for (phrase in phrasesList) {
+            if (phrase.id == phraseId) _phrase = phrase
+        }
+        return checkNotNull(_phrase)
     }
 
     companion object {
