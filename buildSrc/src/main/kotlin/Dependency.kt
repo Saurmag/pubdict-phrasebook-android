@@ -7,10 +7,17 @@ object Dependency {
 
     object Compose {
         const val bom = "androidx.compose:compose-bom:${Version.composeBom}"
+        const val viewModel = "androidx.lifecycle:lifecycle-viewmodel-compose"
         const val ui = "androidx.compose.ui:ui"
         const val uiGraphics = "androidx.compose.ui:ui-graphics"
         const val uiToolingPreview = "androidx.compose.ui:ui-tooling-preview"
         const val material = "androidx.compose.material3:material3"
+        const val runtime = "androidx.lifecycle:lifecycle-runtime-compose"
+    }
+
+    object Image {
+        const val coilCompose = "io.coil-kt:coil-compose:${Version.coil}"
+        const val coil = "io.coil-kt:coil:${Version.coil}"
     }
 
     object Navigation {
@@ -34,6 +41,8 @@ object Dependency {
         const val room = "androidx.room:room-runtime:${Version.room}"
         const val roomKtx = "androidx.room:room-ktx:${Version.room}"
         const val roomCompiler = "androidx.room:room-compiler:${Version.room}"
+        const val dataStore = "androidx.datastore:datastore-preferences:${Version.dataStore}"
+        const val dataStorePreferences = "androidx.datastore:datastore-preferences-core:${Version.dataStore}"
     }
 
     object DI {
@@ -44,6 +53,7 @@ object Dependency {
     object Test {
         const val junit = "junit:junit:${Version.junit}"
         const val mockito = "org.mockito:mockito-inline:${Version.mockito}"
+        const val mockitoKotlin = "org.mockito.kotlin:mockito-kotlin:${Version.mockito}"
         const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Version.coroutines}"
     }
 

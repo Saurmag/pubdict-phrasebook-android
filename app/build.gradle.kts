@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.kapt
+
 plugins {
     id(Plugin.Android.application)
     id(Plugin.Kotlin.android)
@@ -51,7 +53,13 @@ android {
 }
 
 dependencies {
-
+    implementation(project(path = ":domain"))
+    implementation(project(path = ":data-repository"))
+    implementation(project(path = ":data-remote"))
+    implementation(project(path = ":data-local"))
+    implementation(project(path = ":presentation-common"))
+    implementation(project(path = ":presentation-phrasebook"))
+    implementation(project(path = ":presentation-word-of-day"))
     implementation(Dependency.AndroidX.core)
     implementation(Dependency.AndroidX.lifecycle)
     implementation(Dependency.AndroidX.activityCompose)
@@ -61,11 +69,15 @@ dependencies {
     implementation(Dependency.Compose.uiGraphics)
     implementation(Dependency.Compose.uiToolingPreview)
     implementation(Dependency.Compose.material)
+    implementation(Dependency.Compose.runtime)
 
     implementation(Dependency.Network.moshi)
     implementation (Dependency.Network.retrofit)
     implementation(Dependency.Network.moshiConverter)
     kapt(Dependency.Network.moshiCodegen)
+
+    implementation(Dependency.DI.dagger)
+    kapt(Dependency.DI.daggerCompiler)
 
     testImplementation(Dependency.Test.junit)
     androidTestImplementation(Dependency.AndroidTest.junit)

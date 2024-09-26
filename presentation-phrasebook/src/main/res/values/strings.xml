@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="count_phrase">%1$s слова</string>
+    <string name="ipa_text">ipa:</string>
+    <string name="en_text">en:</string>
+    <string name="slash_symbol_tran">" / "</string>
+</resources>

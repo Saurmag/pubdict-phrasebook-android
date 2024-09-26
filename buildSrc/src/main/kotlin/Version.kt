@@ -17,12 +17,16 @@ object Version {
     const val okHttp = "4.10.0"
     const val retrofit = "2.9.0"
 
-    const val room = "2.5.2"
+    const val room = "2.6.0"
 
     const val moshi = "1.15.0"
 
+    const val coil = "2.7.0"
+
+    const val dataStore = "1.1.0"
+
     const val junit = "4.13.2"
-    const val mockito = "5.2.0"
+    const val mockito = "5.3.1"
     const val espressoJunit = "1.1.5"
     const val espressoCore = "3.5.1"
     const val androidTestCore = "1.4.0"

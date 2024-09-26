@@ -15,3 +15,10 @@ dependencyResolutionManagement {
 
 rootProject.name = "Public Dictionary"
 include(":app")
+include(":domain")
+include(":data-repository")
+include(":data-local")
+include(":data-remote")
+include(":presentation-phrasebook")
+include(":presentation-common")
+include(":presentation-word-of-day")
