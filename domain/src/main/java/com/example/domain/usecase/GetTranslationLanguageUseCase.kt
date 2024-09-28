@@ -1,6 +1,6 @@
 package com.example.domain.usecase
 
-import com.example.domain.entity.phrasebook.TranslationLanguage
+import com.example.domain.entity.phrasebook.Language
 import com.example.domain.repository.LocalTranslationLanguageRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,5 +17,5 @@ class GetTranslationLanguageUseCase(
             }
 
     object Request : UseCase.Request
-    data class Response(val translationLanguage: TranslationLanguage): UseCase.Response
+    data class Response(val translationLanguage: Language): UseCase.Response
 }

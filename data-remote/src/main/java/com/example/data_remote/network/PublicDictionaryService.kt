@@ -5,6 +5,7 @@ import com.example.data_remote.network.model.category.CategoryReduced
 import com.example.data_remote.network.model.phrase.NetworkPhrase
 import com.example.data_remote.network.model.phrase.NetworkPhraseList
 import com.example.data_remote.network.model.phrasebook.NetworkPhrasebook
+import com.example.data_remote.network.model.phrasebook.NetworkTranslateLanguageList
 import com.example.data_remote.network.model.wordofday.NetworkWordOfDay
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -36,4 +37,8 @@ interface PublicDictionaryService {
 
     @GET("v2/words_of_day/")
     suspend fun fetchWordOfDayList(@Query(value = "source_lang") srcLangIso: String): List<NetworkWordOfDay>
+
+    @GET("language/{iso}")
+    suspend fun fetchTranslateNetworkLanguage(@Path("iso") srcLangIso: String): NetworkTranslateLanguageList
+
 }

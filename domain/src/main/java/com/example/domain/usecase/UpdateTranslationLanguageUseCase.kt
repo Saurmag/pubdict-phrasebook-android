@@ -1,8 +1,7 @@
 package com.example.domain.usecase
 
-import com.example.domain.entity.phrasebook.TranslationLanguage
+import com.example.domain.entity.phrasebook.Language
 import com.example.domain.repository.LocalTranslationLanguageRepository
-import com.example.domain.usecase.UseCase.Configuration
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -12,10 +11,10 @@ class UpdateTranslationLanguageUseCase(
 ): UseCase<UpdateTranslationLanguageUseCase.Request, UpdateTranslationLanguageUseCase.Response>(configuration) {
 
     override fun process(request: Request): Flow<Response> {
-        localRepository.updateTranslationLanguage(request.languageIso)
+        localRepository.updateTranslationLanguage(request.language)
         return flowOf(Response)
     }
 
-    data class Request(val languageIso: String) : UseCase.Request
+    data class Request(val language: Language) : UseCase.Request
     object Response : UseCase.Response
 }

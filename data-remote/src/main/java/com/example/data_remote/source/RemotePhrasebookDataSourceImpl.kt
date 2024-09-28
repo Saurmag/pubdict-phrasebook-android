@@ -50,6 +50,15 @@ class RemotePhrasebookDataSourceImpl @Inject constructor(
         throw UseCaseException.TopicException(it)
     }
 
+    override fun getTranslateLanguageList(srcLangIso: String): Flow<List<Language>> = flow {
+        val tranLangList = publicDictionaryService
+            .fetchTranslateNetworkLanguage(srcLangIso = srcLangIso).networkTranslateLanguageList
+            .map { it.mapToLanguage() }
+        emit(tranLangList)
+    }.catch {
+        throw UseCaseException.LanguageException(it)
+    }
+
     override fun getTopic(
         id: Int,
         srcLangIso: String,

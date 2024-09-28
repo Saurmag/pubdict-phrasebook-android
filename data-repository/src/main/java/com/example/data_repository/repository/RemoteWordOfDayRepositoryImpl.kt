@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class RemoteWordOfDayRepositoryImpl @Inject constructor(
-    private val remoteWordOfDayDataSource: RemoteWordOfDayDataSource
+    private val remoteDataSource: RemoteWordOfDayDataSource
 ): RemoteWordOfDayRepository {
     override fun getWordOfDayList(srcLangIso: String): Flow<List<WordOfDay>> =
-        remoteWordOfDayDataSource.getWordOfDayList(srcLangIso = srcLangIso)
+        remoteDataSource.getWordOfDayList(srcLangIso = srcLangIso)
 }
