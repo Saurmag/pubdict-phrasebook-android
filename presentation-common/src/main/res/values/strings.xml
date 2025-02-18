@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error">Произошла ошибка</string>
+    <string name="ipa_text">ipa:</string>
+    <string name="en_text">en:</string>
+    <string name="slash_symbol_tran">" / "</string>
+    <string name="volume_icon">Воспроизведение фразы</string>
+    <string name="back_icon">Назад</string>
+    <string name="share_icon">Поделиться</string>
+    <string name="message_error_icon">Сообщение об ошибке</string>
+    <string name="bookmark_icon">Сохранить в избранное</string>
+    <string name="dialog_cancel_icon">Отменить действие</string>
+    <string name="dialog_error_message_placeholder">Сообщить об ошибке</string>
+    <string name="dialog_send_error_message_button">Отправить</string>
+    <string name="not_implemented">Не реализовано</string>
+    <string name="search_words_icon_search">Поиск слова</string>
+    <string name="search_words_icon_cancel">Вернуться</string>
+</resources>

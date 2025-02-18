@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_words">Введите слово на табасаранском</string>
+    <string name="transition_test_lez">Уву табасаран чъал апъурана?</string>
+    <string name="phrasebook_origin_lang">Табасаранский</string>
+</resources>

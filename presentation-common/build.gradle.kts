@@ -1,20 +1,15 @@
 plugins {
-    id(Plugin.Android.library)
-    id(Plugin.Kotlin.android)
-    id(Plugin.Kotlin.kapt)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
 }
-
 android {
     namespace = "com.example.presentation_common"
     compileSdk = Config.defaultCompileSdkVersion
-
     defaultConfig {
         minSdk = Config.defaultMinSdkVersion
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
     }
-
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -24,15 +19,36 @@ android {
             )
         }
     }
+    flavorDimensions += "originLanguage"
+    productFlavors {
+        create("lezgin") {
+            dimension = "originLanguage"
+        }
+        create("avar") {
+            dimension = "originLanguage"
+        }
+        create("kumyk") {
+            dimension = "originLanguage"
+        }
+        create("tabasaran") {
+            dimension = "originLanguage"
+        }
+        create("dargin") {
+            dimension = "originLanguage"
+        }
+        create("lakz") {
+            dimension = "originLanguage"
+        }
+    }
     buildFeatures {
         compose = true
     }
     compileOptions {
-        sourceCompatibility = Config.defaultSourceCompatibility
-        targetCompatibility = Config.defaultTargetCompatibility
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = Config.defaultJVMTarget
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11.target
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -41,17 +57,19 @@ android {
 
 dependencies {
     implementation(project(path = ":domain"))
-    implementation(Dependency.Coroutines.android)
-    implementation(platform(Dependency.Compose.bom))
-    implementation(Dependency.Compose.ui)
-    implementation(Dependency.Compose.material)
-    implementation(Dependency.Compose.viewModel)
-    implementation(Dependency.Compose.uiGraphics)
-    implementation(Dependency.Compose.uiToolingPreview)
-    implementation(Dependency.AndroidX.lifecycle)
-    implementation(Dependency.Navigation.composeNavigation)
-    implementation(Dependency.DI.dagger)
-    kapt(Dependency.DI.daggerCompiler)
-    testImplementation(Dependency.Test.junit)
-    androidTestImplementation(Dependency.AndroidTest.junit)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.lifecycle.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.unit.test.junit)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

@@ -6,10 +6,14 @@ import com.example.data_remote.network.model.phrase.NetworkPhrase
 import com.example.data_remote.network.model.phrase.NetworkPhraseList
 import com.example.data_remote.network.model.phrasebook.NetworkPhrasebook
 import com.example.data_remote.network.model.phrasebook.NetworkTranslateLanguageList
+import com.example.data_remote.network.model.word.NetworkWordList
+import com.example.data_remote.network.model.word.NetworkWordTranslation
 import com.example.data_remote.network.model.wordofday.NetworkWordOfDay
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+
+private const val DEVICE = "ANDROID"
 
 interface PublicDictionaryService {
 
@@ -41,4 +45,20 @@ interface PublicDictionaryService {
     @GET("language/{iso}")
     suspend fun fetchTranslateNetworkLanguage(@Path("iso") srcLangIso: String): NetworkTranslateLanguageList
 
+    @GET("v2/entries/translate/")
+    suspend fun fetchNetworkEntryWordFullTranslation(
+        @Query(value = "device") device: String = DEVICE,
+        @Query(value = "source_lang") srcLangIso: String,
+        @Query(value = "target_lang") tarLangIso: String,
+        @Query(value = "word") word: String
+    ): List<NetworkWordTranslation>
+
+    @GET("words/")
+    suspend fun fetchNetworkWordList(
+        @Query(value = "source_lang") srcLangIso: String,
+        @Query(value = "target_lang") tarLangIso: String,
+        @Query(value = "q") query: String,
+        @Query(value = "limit") limit: Int = 100,
+        @Query(value = "offset") offset: Int = 1
+    ): NetworkWordList
 }

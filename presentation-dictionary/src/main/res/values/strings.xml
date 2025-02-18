@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="count_phrase">%1$s слова</string>
+    <string name="language_test">Пройди тест на знание языка</string>
+    <string name="word_of_day_image">Слово дня</string>
+    <string name="pub_dict">Public dictionary</string>
+    <string name="bookmark">Закладка</string>
+    <string name="share">Поделиться</string>
+    <string name="transition_phrasebook">Перейти к разговорнику</string>
+    <string name="transiton_test">Пройди тест на знание языка</string>
+    <string name="not_implemented">Не реализовано</string>
+    <string name="record_word">Озвучить слово</string>
+    <string name="dictionary_tab">Словарь</string>
+    <string name="phrasebook_tab">Разговорник</string>
+    <string name="ipa_text">ipa:</string>
+    <string name="en_text">en:</string>
+    <string name="slash_symbol_tran">" / "</string>
+    <string name="record_phrase">Озвучить фразу</string>
+    <string name="share_word_format_helper">Слово:</string>
+    <string name="share_translated_word_format_helper">Перевод:</string>
+    <string name="share_ipa_transcription_word_format_helper">Транскрипция слова на МФА:</string>
+    <string name="share_en_transcription_word_format_helper">Транскрипция слова на латинице:</string>
+    <string name="share_phrase_format_helper">Фраза:</string>
+    <string name="share_translated_phrase_format_helper">Перевод:</string>
+    <string name="share_ipa_transcription_phrase_format_helper">Транскрипция фразы на МФА:</string>
+    <string name="share_en_transcription_phrase_format_helper">Транскрипция фразы на латинице:</string>
+</resources>

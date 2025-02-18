@@ -1,5 +1,6 @@
 package com.example.data_remote.injection
 
+import com.example.data_repository.datasource.remote.RemoteDictionaryDataSource
 import com.example.data_repository.datasource.remote.RemotePhrasebookDataSource
 import com.example.data_repository.datasource.remote.RemoteWordOfDayDataSource
 import com.example.data_repository.injection.RemotePhrasebookDataSourceDeps
@@ -11,4 +12,5 @@ import javax.inject.Singleton
 interface DataRemoteComponent : RemotePhrasebookDataSourceDeps {
     override val remotePhrasebookDataSource: RemotePhrasebookDataSource
     override val remoteWordOfDayDataSource: RemoteWordOfDayDataSource
+    override val remoteDictionaryDataSource: RemoteDictionaryDataSource
 }

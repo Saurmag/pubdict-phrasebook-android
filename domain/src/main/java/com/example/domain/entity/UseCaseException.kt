@@ -2,6 +2,8 @@ package com.example.domain.entity
 
 sealed class UseCaseException(cause: Throwable): Throwable(cause) {
 
+    class WordException(cause: Throwable): UseCaseException(cause)
+
     class LanguageException(cause: Throwable): UseCaseException(cause)
 
     class PhrasebookException(cause: Throwable): UseCaseException(cause)

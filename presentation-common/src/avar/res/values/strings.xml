@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_words">Введите слово на аварском</string>
+    <string name="transition_test_lez">Магъарул мацъ лъалищ дуда?</string>
+    <string name="phrasebook_origin_lang">Аварский</string>
+</resources>

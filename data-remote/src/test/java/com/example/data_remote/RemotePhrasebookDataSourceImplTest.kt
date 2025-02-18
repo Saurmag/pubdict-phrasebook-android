@@ -10,7 +10,7 @@ import com.example.data_remote.network.model.phrase.NetworkPhrase
 import com.example.data_remote.network.model.phrase.NetworkPhraseList
 import com.example.data_remote.network.model.phrasebook.NetworkPhrasebook
 import com.example.data_remote.source.RemotePhrasebookDataSourceImpl
-import com.example.domain.entity.phrasebook.Language
+import com.example.domain.entity.dictionary.Language
 import com.example.domain.entity.phrasebook.Phrase
 import com.example.domain.entity.phrasebook.Phrasebook
 import com.example.domain.entity.phrasebook.Topic

@@ -7,7 +7,7 @@ import com.example.data_remote.network.model.category.NetworkLanguage
 import com.example.data_remote.network.model.phrase.NetworkPhrase
 import com.example.data_remote.network.model.phrasebook.NetworkPhrasebook
 import com.example.data_repository.datasource.remote.RemotePhrasebookDataSource
-import com.example.domain.entity.phrasebook.Language
+import com.example.domain.entity.dictionary.Language
 import com.example.domain.entity.phrasebook.Phrase
 import com.example.domain.entity.phrasebook.Phrasebook
 import com.example.domain.entity.phrasebook.Topic
@@ -18,11 +18,11 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class RemotePhrasebookDataSourceImpl @Inject constructor(
-    private val publicDictionaryService: PublicDictionaryService
+    private val service: PublicDictionaryService
 ) : RemotePhrasebookDataSource {
 
     override fun getPhrasebook(id: Int, tarLangIso: String): Flow<Phrasebook> = flow {
-        val phrasebook = publicDictionaryService.fetchNetworkPhrasebook(id)
+        val phrasebook = service.fetchNetworkPhrasebook(id)
             .mapToPhrasebook(tarLangIso)
         emit(phrasebook)
     }.catch {
@@ -30,13 +30,15 @@ class RemotePhrasebookDataSourceImpl @Inject constructor(
     }
 
     override fun getTopicList(srcLangIso: String, tarLangIso: String): Flow<List<Topic>> = flow {
-        val filteredCategoryList = publicDictionaryService.fetchCategoryList(
+        val filteredCategoryList = service.fetchCategoryList(
             srcLangIso = srcLangIso,
             tarLangIso = tarLangIso
-        ).categoryList.filter { category ->
-            category.categoryTranslationList.isNotEmpty() && category.categoryTranslationList.any { categoryTranslation ->
-                categoryTranslation.networkLanguage.iso == tarLangIso
-            }
+        ).categoryList
+            .filter { category ->
+                category.categoryTranslationList.isNotEmpty() && category.categoryTranslationList
+                    .any { categoryTranslation ->
+                        categoryTranslation.networkLanguage.iso == tarLangIso
+                    }
         }
         val topicList = filteredCategoryList
             .map { category ->
@@ -51,7 +53,7 @@ class RemotePhrasebookDataSourceImpl @Inject constructor(
     }
 
     override fun getTranslateLanguageList(srcLangIso: String): Flow<List<Language>> = flow {
-        val tranLangList = publicDictionaryService
+        val tranLangList = service
             .fetchTranslateNetworkLanguage(srcLangIso = srcLangIso).networkTranslateLanguageList
             .map { it.mapToLanguage() }
         emit(tranLangList)
@@ -64,9 +66,9 @@ class RemotePhrasebookDataSourceImpl @Inject constructor(
         srcLangIso: String,
         tarLangIso: String
     ): Flow<Topic> = flow {
-        val categoryReduced = publicDictionaryService.fetchCategoryReduced(id)
+        val categoryReduced = service.fetchCategoryReduced(id)
         val topic = categoryReduced.let {
-            val networkPhraseList = publicDictionaryService.fetchPhraseList(
+            val networkPhraseList = service.fetchPhraseList(
                 categoryId = it.id,
                 srcLangIso = srcLangIso,
                 tarLangIso = tarLangIso
@@ -86,7 +88,7 @@ class RemotePhrasebookDataSourceImpl @Inject constructor(
     }
 
     override fun getPhrase(id: Int): Flow<Phrase> = flow {
-        val phrase = publicDictionaryService.fetchPhrase(id).mapToPhrase()
+        val phrase = service.fetchPhrase(id).mapToPhrase()
         emit(phrase)
     }.catch {
         throw UseCaseException.PhraseException(cause = it)

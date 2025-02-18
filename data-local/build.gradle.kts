@@ -1,15 +1,15 @@
 plugins {
-    id(Plugin.Android.library)
-    id(Plugin.Kotlin.android)
-    id(Plugin.Kotlin.kapt)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
     namespace = "com.example.data_repository"
-    compileSdk = 34
+    compileSdk = Config.defaultCompileSdkVersion
 
     defaultConfig {
-        minSdk = 24
+        minSdk = Config.defaultMinSdkVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -25,22 +25,21 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11.target
     }
 }
 
 dependencies {
     implementation(project(path = ":domain"))
     implementation(project(path = ":data-repository"))
-    implementation(Dependency.Coroutines.core)
-    implementation(Dependency.Persistence.dataStore)
-    implementation(Dependency.DI.dagger)
-    kapt(Dependency.DI.daggerCompiler)
-    testImplementation(Dependency.Test.junit)
-    testImplementation(Dependency.Test.coroutines)
-    testImplementation(Dependency.Test.mockitoKotlin)
+    implementation(libs.androidx.datastore)
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
+    testImplementation(libs.unit.test.junit)
+    testImplementation(libs.unit.test.coroutines)
+    testImplementation(libs.unit.test.mockito.kotlin)
 }

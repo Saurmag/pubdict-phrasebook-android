@@ -1,11 +1,11 @@
 package com.example.domain
 
 
-import com.example.domain.entity.phrasebook.Language
+import com.example.domain.entity.dictionary.Language
 import com.example.domain.entity.phrasebook.Phrase
 import com.example.domain.entity.phrasebook.Topic
-import com.example.domain.repository.RemotePhrasebookRepository
-import com.example.domain.usecase.GetTopicUseCase
+import com.example.domain.repository.remote.RemotePhrasebookRepository
+import com.example.domain.usecase.phrasebook.GetTopicUseCase
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest

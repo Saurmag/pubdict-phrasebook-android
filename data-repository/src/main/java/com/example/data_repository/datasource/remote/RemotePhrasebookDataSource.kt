@@ -1,6 +1,6 @@
 package com.example.data_repository.datasource.remote
 
-import com.example.domain.entity.phrasebook.Language
+import com.example.domain.entity.dictionary.Language
 import com.example.domain.entity.phrasebook.Phrase
 import com.example.domain.entity.phrasebook.Phrasebook
 import com.example.domain.entity.phrasebook.Topic

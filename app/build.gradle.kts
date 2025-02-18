@@ -1,9 +1,8 @@
-import org.gradle.kotlin.dsl.kapt
-
 plugins {
-    id(Plugin.Android.application)
-    id(Plugin.Kotlin.android)
-    id(Plugin.Kotlin.kapt)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -32,9 +31,45 @@ android {
             )
         }
     }
+
+    flavorDimensions += "originLanguage"
+
+    productFlavors {
+        create("lezgin") {
+            dimension = "originLanguage"
+            applicationIdSuffix = ".lezgin"
+            versionNameSuffix = "-lezgin"
+        }
+        create("avar") {
+            dimension = "originLanguage"
+            applicationIdSuffix = ".avar"
+            versionNameSuffix = "-avar"
+        }
+        create("kumyk") {
+            dimension = "originLanguage"
+            applicationIdSuffix = ".kumyk"
+            versionNameSuffix = "-kumyk"
+        }
+        create("tabasaran") {
+            dimension = "originLanguage"
+            applicationIdSuffix = ".tabasaran"
+            versionNameSuffix = "-tabasaran"
+        }
+        create("dargin") {
+            dimension = "originLanguage"
+            applicationIdSuffix = ".dargin"
+            versionNameSuffix = "-dargin"
+        }
+        create("lakz") {
+            dimension = "originLanguage"
+            applicationIdSuffix = ".lakz"
+            versionNameSuffix = "-lakz"
+        }
+    }
+
     compileOptions {
-        sourceCompatibility = Config.defaultSourceCompatibility
-        targetCompatibility = Config.defaultTargetCompatibility
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
         jvmTarget = Config.defaultJVMTarget
@@ -58,32 +93,21 @@ dependencies {
     implementation(project(path = ":data-remote"))
     implementation(project(path = ":data-local"))
     implementation(project(path = ":presentation-common"))
-    implementation(project(path = ":presentation-phrasebook"))
-    implementation(project(path = ":presentation-word-of-day"))
-    implementation(Dependency.AndroidX.core)
-    implementation(Dependency.AndroidX.lifecycle)
-    implementation(Dependency.AndroidX.activityCompose)
-    implementation(platform(Dependency.Compose.bom))
-    implementation(Dependency.Navigation.composeNavigation)
-    implementation(Dependency.Compose.ui)
-    implementation(Dependency.Compose.uiGraphics)
-    implementation(Dependency.Compose.uiToolingPreview)
-    implementation(Dependency.Compose.material)
-    implementation(Dependency.Compose.runtime)
-
-    implementation(Dependency.Network.moshi)
-    implementation (Dependency.Network.retrofit)
-    implementation(Dependency.Network.moshiConverter)
-    kapt(Dependency.Network.moshiCodegen)
-
-    implementation(Dependency.DI.dagger)
-    kapt(Dependency.DI.daggerCompiler)
-
-    testImplementation(Dependency.Test.junit)
-    androidTestImplementation(Dependency.AndroidTest.junit)
-    androidTestImplementation(Dependency.AndroidTest.espressoCore)
-    androidTestImplementation(platform(Dependency.Compose.bom))
-    androidTestImplementation(Dependency.AndroidTest.uiTestJUnit4)
-    debugImplementation(Dependency.Debug.uiTooling)
-    debugImplementation(Dependency.Debug.uiTestManifest)
+    implementation(project(path = ":presentation-dictionary"))
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.lifecycle.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
+    testImplementation(libs.unit.test.junit)
+    androidTestImplementation(libs.androidx.ui.test.junit)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

@@ -1,5 +1,7 @@
 package com.example.domain.entity.phrasebook
 
+import com.example.domain.entity.dictionary.Language
+
 data class Topic(
     val id: Int,
     val originTitle: String,

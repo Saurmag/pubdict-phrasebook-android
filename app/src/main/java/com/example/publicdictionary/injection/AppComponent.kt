@@ -1,11 +1,18 @@
 package com.example.publicdictionary.injection
 
+import android.content.Context
 import com.example.data_local.injection.DataLocalComponent
 import com.example.data_remote.injection.DataRemoteComponent
 import com.example.data_repository.injection.DataRepositoryComponent
-import com.example.presentation_phrasebook.injection.PhrasebookViewModelModule
-import com.example.presentation_word_of_day.words_of_day.WordsOfDayViewModelModule
-import com.example.publicdictionary.MainActivity
+import com.example.domain.repository.local.LocalTranslationLanguageRepository
+import com.example.domain.repository.remote.RemoteDictionaryRepository
+import com.example.domain.repository.remote.RemotePhrasebookRepository
+import com.example.domain.repository.remote.RemoteWordOfDayRepository
+import com.example.presentation_dictionary.injection.ActivityContext
+import com.example.presentation_dictionary.injection.ActivityDeps
+import com.example.presentation_dictionary.injection.ApplicationContext
+import com.example.presentation_dictionary.injection.ContextDeps
+import com.example.presentation_dictionary.injection.RepositoryDeps
 import dagger.Component
 import javax.inject.Scope
 
@@ -14,15 +21,28 @@ annotation class ApplicationScope
 
 @ApplicationScope
 @Component(
-    modules = [PhrasebookViewModelModule::class, WordsOfDayViewModelModule::class],
-    dependencies = [DataRepositoryComponent::class, DataRemoteComponent::class, DataLocalComponent::class]
+    dependencies = [DataRepositoryComponent::class, DataRemoteComponent::class, DataLocalComponent::class, HelperComponent::class]
 )
-interface AppComponent {
+interface AppComponent : RepositoryDeps, ContextDeps, ActivityDeps {
 
-    fun inject(mainActivity: MainActivity)
+    override val wordOfDayRepository: RemoteWordOfDayRepository
+
+    override val dictionaryRepository: RemoteDictionaryRepository
+
+    override val phrasebookRepository: RemotePhrasebookRepository
+
+    override val tranLangRepository: LocalTranslationLanguageRepository
+
+    @get:ActivityContext
+    override val activityContext: Context
+
+    @get:ApplicationContext
+    override val applicationContext: Context
 
     @Component.Builder
     interface Builder {
+
+        fun depsHelperComponent(helperComponent: HelperComponent): Builder
 
         fun depsDataLocalComponent(dataLocalComponent: DataLocalComponent): Builder
 

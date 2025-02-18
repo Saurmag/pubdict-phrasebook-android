@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_words">Введите слово на лакском</string>
+    <string name="transition_test_lez">Вин лакку маз къуллив?</string>
+    <string name="phrasebook_origin_lang">Лакский</string>
+</resources>

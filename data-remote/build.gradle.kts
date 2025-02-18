@@ -1,7 +1,7 @@
 plugins {
-    id(Plugin.Android.library)
-    id(Plugin.Kotlin.android)
-    id(Plugin.Kotlin.kapt)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -25,25 +25,25 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = Config.defaultSourceCompatibility
-        targetCompatibility = Config.defaultTargetCompatibility
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = Config.defaultJVMTarget
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11.target
     }
 }
 
 dependencies {
     implementation(project(path = ":domain"))
     implementation(project(path = ":data-repository"))
-    implementation(Dependency.Coroutines.android)
-    implementation(Dependency.Network.moshi)
-    implementation (Dependency.Network.retrofit)
-    implementation(Dependency.Network.moshiConverter)
-    kapt(Dependency.Network.moshiCodegen)
-    implementation(Dependency.DI.dagger)
-    kapt(Dependency.DI.daggerCompiler)
-    testImplementation(Dependency.Test.junit)
-    testImplementation(Dependency.Test.coroutines)
-    testImplementation(Dependency.Test.mockitoKotlin)
+    implementation(libs.coroutines.core)
+    implementation(libs.retrofit)
+    implementation (libs.retrofit.converter.moshi)
+    implementation(libs.moshi)
+    kapt(libs.moshi.codegen)
+    implementation(libs.dagger)
+    kapt(libs.dagger.compiler)
+    testImplementation(libs.unit.test.junit)
+    testImplementation(libs.unit.test.coroutines)
+    testImplementation(libs.unit.test.mockito.kotlin)
 }

@@ -8,15 +8,28 @@ import dagger.Provides
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import javax.inject.Scope
+import java.util.concurrent.TimeUnit
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
 class NetworkModule {
 
+    @Product
+    @Provides
+    fun provideProductBaseUrl(): String = "https://api.publicdictionary.org/"
+
+    @Staging
+    @Provides
+    fun provideStagingBaseUrl(): String = "https://staging-api.publicdictionary.org/"
+
     @Singleton
     @Provides
-    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder().build()
+    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
+        .connectTimeout(15, TimeUnit.SECONDS)
+        .writeTimeout(15, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .build()
 
     @Singleton
     @Provides
@@ -26,11 +39,12 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideRetrofit(
+    fun provideRetrofitProduct(
+        @Product baseUrl: String,
         okHttpClient: OkHttpClient,
         moshi: Moshi
     ): Retrofit = Retrofit.Builder()
-        .baseUrl("http://staging-api.publicdictionary.org/")
+        .baseUrl(baseUrl)
         .client(okHttpClient)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()
@@ -41,3 +55,11 @@ class NetworkModule {
         retrofit: Retrofit
     ): PublicDictionaryService = retrofit.create(PublicDictionaryService::class.java)
 }
+
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Staging
+
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Product

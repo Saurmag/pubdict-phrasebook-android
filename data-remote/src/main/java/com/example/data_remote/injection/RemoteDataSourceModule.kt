@@ -1,7 +1,9 @@
 package com.example.data_remote.injection
 
+import com.example.data_remote.source.RemoteDictionaryDataSourceImpl
 import com.example.data_remote.source.RemotePhrasebookDataSourceImpl
 import com.example.data_remote.source.RemoteWordOfDayDataSourceImpl
+import com.example.data_repository.datasource.remote.RemoteDictionaryDataSource
 import com.example.data_repository.datasource.remote.RemotePhrasebookDataSource
 import com.example.data_repository.datasource.remote.RemoteWordOfDayDataSource
 import dagger.Binds
@@ -22,4 +24,10 @@ abstract class RemoteDataSourceModule {
     abstract fun bindRemoteWordOfDayDataSource(
         remoteWordOfDayDataSourceImpl: RemoteWordOfDayDataSourceImpl
     ): RemoteWordOfDayDataSource
+
+    @Singleton
+    @Binds
+    abstract fun bindRemoteDictionaryDataSource(
+        remoteDictionaryDataSourceImpl: RemoteDictionaryDataSourceImpl
+    ): RemoteDictionaryDataSource
 }

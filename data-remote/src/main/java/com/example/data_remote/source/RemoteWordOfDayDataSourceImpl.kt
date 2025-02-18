@@ -4,19 +4,19 @@ import com.example.data_remote.network.PublicDictionaryService
 import com.example.data_remote.network.model.wordofday.NetworkImageWordOfDay
 import com.example.data_remote.network.model.wordofday.NetworkWordOfDay
 import com.example.data_repository.datasource.remote.RemoteWordOfDayDataSource
-import com.example.domain.entity.ImageWordOfDay
+import com.example.domain.entity.dictionary.ImageWordOfDay
 import com.example.domain.entity.UseCaseException
-import com.example.domain.entity.WordOfDay
+import com.example.domain.entity.dictionary.WordOfDay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class RemoteWordOfDayDataSourceImpl @Inject constructor(
-    private val publicDictionaryService: PublicDictionaryService
+    private val service: PublicDictionaryService
 ): RemoteWordOfDayDataSource {
     override fun getWordOfDayList(srcLangIso: String): Flow<List<WordOfDay>> = flow {
-        val wordOfDayList = publicDictionaryService.fetchWordOfDayList(srcLangIso = srcLangIso)
+        val wordOfDayList = service.fetchWordOfDayList(srcLangIso = srcLangIso)
             .map { it.mapToWordOfDay() }
         emit(wordOfDayList)
     }.catch {

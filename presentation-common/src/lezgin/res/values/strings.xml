@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_words">Введите слово на лезгинском</string>
+    <string name="transition_test_lez">Ваз лезги чIал чизвани?</string>
+    <string name="phrasebook_origin_lang">Лезгинский</string>
+</resources>
