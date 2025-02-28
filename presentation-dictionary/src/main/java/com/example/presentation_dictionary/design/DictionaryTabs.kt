@@ -74,7 +74,6 @@ import kotlin.math.roundToInt
 fun DictionaryTabs(
     wordsUiState: LazyPagingItems<WordModel>,
     phrasebookUiState: PhrasebookUiState,
-    queryPart: String,
     onWordClick: (String) -> Unit,
     onTopicClick: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -125,7 +124,6 @@ fun DictionaryTabs(
                                 words = wordsUiState,
                                 onWordClick = onWordClick,
                                 pointEventEnabled = pointEventEnabled,
-                                queryPart = queryPart
                             )
                         }
 

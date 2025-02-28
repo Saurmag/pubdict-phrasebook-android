@@ -29,7 +29,6 @@ import com.example.presentation_common.design.Loading
 @Composable
 fun WordList(
     words: LazyPagingItems<WordModel>,
-    queryPart: String,
     onWordClick: (String) -> Unit,
     pointEventEnabled: Boolean,
     modifier: Modifier = Modifier
@@ -44,7 +43,6 @@ fun WordList(
             words[wordIndex]?.let { word ->
                 Word(
                     word = word.originText,
-                    queryPart = queryPart,
                     onWordClick = onWordClick,
                     clickEnabled = pointEventEnabled
                 )
@@ -67,7 +65,6 @@ fun WordList(
 @Composable
 fun Word(
     word: String,
-    queryPart: String,
     onWordClick: (String) -> Unit,
     clickEnabled: Boolean,
     modifier: Modifier = Modifier
@@ -85,56 +82,13 @@ fun Word(
                 enabled = clickEnabled
             ) { onWordClick(word) }
     ) {
-        SpecificText(
-            queryPart = queryPart,
-            word = word,
+        Text(
+            text = word,
+            style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(top = 12.dp, bottom = 16.dp)
         )
         HorizontalDivider(
             color = Color(0x19000000)
-        )
-    }
-}
-
-@Composable
-fun SpecificText(
-    queryPart: String,
-    word: String,
-    modifier: Modifier = Modifier
-) {
-    if (queryPart.isBlank()) {
-        Text(
-            text = word,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = modifier
-        )
-    }
-    else {
-        Text(
-            text =
-                buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            fontFamily = MaterialTheme.typography.titleMedium.fontFamily,
-                            fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
-                            fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    ) {
-                        append(queryPart)
-                    }
-                    withStyle(
-                        style = SpanStyle(
-                            fontFamily = MaterialTheme.typography.titleMedium.fontFamily,
-                            fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
-                            fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                        )
-                    ) {
-                        val remainingWord = word.drop(queryPart.length)
-                        append(remainingWord)
-                    }
-                },
-            modifier = modifier
         )
     }
 }

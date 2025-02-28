@@ -209,7 +209,6 @@ fun DictionaryContent(
                     DictionaryState.DictionaryTabs -> {
                         DictionaryTabs(
                             wordsUiState = wordsUiState,
-                            queryPart = searchQueryState,
                             phrasebookUiState = phrasebookUiState,
                             onWordClick = onWordClick,
                             onTopicClick = onTopicClick
