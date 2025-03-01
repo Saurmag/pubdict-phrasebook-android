@@ -4,13 +4,9 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.calculateTargetValue
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.splineBasedDecay
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.horizontalDrag
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,20 +27,18 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.positionChange
-import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
@@ -65,9 +59,7 @@ import com.example.presentation_dictionary.phrasebook.Phrasebook
 import com.example.presentation_dictionary.phrasebook.PhrasebookUiState
 import com.example.presentation_dictionary.word.list.WordList
 import com.example.presentation_dictionary.word.list.WordModel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 @Composable
@@ -78,22 +70,21 @@ fun DictionaryTabs(
     onTopicClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var state by rememberSaveable { mutableStateOf(TabRowState.Dictionary) }
+    val state = rememberSaveable { mutableStateOf(TabRowState.Dictionary) }
     var tabIsClicked by remember { mutableStateOf(false) }
     val indicator =
         @Composable { tabPositions: List<TabPosition> ->
             TabRowIndicator(
-                modifier = Modifier.tabCustomOffsetIndicator(tabPositions[state.ordinal])
+                modifier = Modifier.tabCustomOffsetIndicator(tabPositions[state.value.ordinal])
             )
         }
-    var pointEventEnabled by remember { mutableStateOf(true) }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
         modifier = modifier.fillMaxSize()
     ) {
         TabRow(
-            selectedTabIndex = state.ordinal,
+            selectedTabIndex = state.value.ordinal,
             indicator = indicator,
             divider = {
                 HorizontalDivider(color = Color(0x19000000))
@@ -103,73 +94,25 @@ fun DictionaryTabs(
         ) {
             DictionaryTab(
                 tabText = R.string.dictionary_tab,
-                selected = state == TabRowState.Dictionary,
-                onTabClick = { state = TabRowState.Dictionary; tabIsClicked = true }
+                selected = state.value == TabRowState.Dictionary,
+                onTabClick = {
+                    state.value = TabRowState.Dictionary; tabIsClicked = true
+                }
             )
             DictionaryTab(
                 tabText = R.string.phrasebook_tab,
-                selected = state == TabRowState.Phrasebook,
-                onTabClick = { state = TabRowState.Phrasebook; tabIsClicked = true }
+                selected = state.value == TabRowState.Phrasebook,
+                onTabClick = {
+                    state.value = TabRowState.Phrasebook; tabIsClicked = true
+                }
             )
         }
-        Layout(
-            content = {
-                Box(
-                    modifier = Modifier
-                        .layoutId(TabRowState.Dictionary)
-                ) {
-                    when (wordsUiState.loadState.refresh) {
-                        is LoadState.NotLoading -> {
-                            WordList(
-                                words = wordsUiState,
-                                onWordClick = onWordClick,
-                                pointEventEnabled = pointEventEnabled,
-                            )
-                        }
-
-                        is LoadState.Loading -> {
-                            Loading()
-                        }
-
-                        is LoadState.Error -> {
-                            (wordsUiState.loadState.refresh as LoadState.Error).error.localizedMessage?.let {
-                                Error(errorMessage = it)
-                            }
-                        }
-                    }
-                }
-                Box(
-                    modifier = Modifier
-                        .layoutId(TabRowState.Phrasebook)
-                ) {
-                    when {
-                        phrasebookUiState.isLoading -> Loading()
-
-                        phrasebookUiState.exception != null -> {
-                            phrasebookUiState.exception.localizedMessage?.let { Error(errorMessage = it) }
-                        }
-
-                        phrasebookUiState.topicList.isNotEmpty() -> {
-                            Phrasebook(
-                                topics = phrasebookUiState.topicList,
-                                onTopicClick = onTopicClick,
-                                pointEventEnabled = pointEventEnabled,
-                                modifier = Modifier
-                            )
-                        }
-                    }
-                }
-            },
-            measurePolicy = dictionaryTabPager(),
-            modifier = Modifier
-                .swipeToChangeTab(
-                    tabRowState = state,
-                    tabIsClicked = tabIsClicked,
-                    tabChanged = { tabIsClicked = false },
-                    onSwiped = { pointEventEnabled = it },
-                    onDictionarySwipe = { state = TabRowState.Phrasebook },
-                    onPhrasebookSwipe = { state = TabRowState.Dictionary }
-                )
+        TabsContent(
+            wordsUiState = wordsUiState,
+            phrasebookUiState = phrasebookUiState,
+            tabRowState = state,
+            onTopicClick = onTopicClick,
+            onWordClick = onWordClick
         )
     }
 }
@@ -208,6 +151,91 @@ fun TabRowIndicator(
     )
 }
 
+@Composable
+fun TabsContent(
+    wordsUiState: LazyPagingItems<WordModel>,
+    phrasebookUiState: PhrasebookUiState,
+    onWordClick: (String) -> Unit,
+    onTopicClick: (Int) -> Unit,
+    tabRowState: MutableState<TabRowState>,
+) {
+    val density = LocalDensity.current
+    val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
+    val widthPx = with(density) { screenWidthDp.toPx() }
+    val animatableSaver = Saver<Animatable<Float, AnimationVector1D>, Float>(
+        save = { it.value },
+        restore = { Animatable(it) }
+    )
+    val animatableOffsetX = rememberSaveable(saver = animatableSaver) { Animatable(initialValue = 0f) }
+    LaunchedEffect(Unit) {
+        snapshotFlow { tabRowState.value }
+            .collect { state ->
+                if (state == TabRowState.Dictionary) {
+                    animatableOffsetX.animateTo(
+                        targetValue = 0f,
+                        animationSpec = tween(durationMillis = 250)
+                    )
+                }
+                else {
+                    animatableOffsetX.animateTo(
+                        targetValue = -widthPx,
+                        animationSpec = tween(durationMillis = 250)
+                    )
+                }
+            }
+    }
+    Layout(
+        content = {
+            Box(
+                modifier = Modifier
+                    .layoutId(TabRowState.Dictionary)
+            ) {
+                when (wordsUiState.loadState.refresh) {
+                    is LoadState.NotLoading -> {
+                        WordList(
+                            words = wordsUiState,
+                            onWordClick = onWordClick,
+                        )
+                    }
+
+                    is LoadState.Loading -> {
+                        Loading()
+                    }
+
+                    is LoadState.Error -> {
+                        (wordsUiState.loadState.refresh as LoadState.Error).error.localizedMessage?.let {
+                            Error(errorMessage = it)
+                        }
+                    }
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .layoutId(TabRowState.Phrasebook)
+            ) {
+                when {
+                    phrasebookUiState.isLoading -> Loading()
+
+                    phrasebookUiState.exception != null -> {
+                        phrasebookUiState.exception.localizedMessage?.let { Error(errorMessage = it) }
+                    }
+
+                    phrasebookUiState.topicList.isNotEmpty() -> {
+                        Phrasebook(
+                            topics = phrasebookUiState.topicList,
+                            onTopicClick = onTopicClick,
+                            modifier = Modifier
+                        )
+                    }
+                }
+            }
+        },
+        measurePolicy = dictionaryTabPager(),
+        modifier = Modifier
+            .offset { IntOffset(x = animatableOffsetX.value.roundToInt(), y = 0) }
+    )
+}
+
 fun Modifier.tabCustomOffsetIndicator(currentTabPosition: TabPosition) =
     composed {
         val animatableWidth = remember {
@@ -238,189 +266,6 @@ fun Modifier.tabCustomOffsetIndicator(currentTabPosition: TabPosition) =
             .width(animatableWidth.value.dp)
     }
 
-fun Modifier.swipeToChangeTab(
-    tabRowState: TabRowState,
-    tabIsClicked: Boolean,
-    tabChanged: (Boolean) -> Unit,
-    onSwiped: (Boolean) -> Unit,
-    onDictionarySwipe: () -> Unit,
-    onPhrasebookSwipe: () -> Unit
-): Modifier = composed {
-    val density = LocalDensity.current
-    val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
-    val widthPx = with(density) { screenWidthDp.toPx() }
-    val animatableSaver = Saver<Animatable<Float, AnimationVector1D>, Float>(
-        save = { it.value },
-        restore = { Animatable(it) }
-    )
-    val animatableOffsetX = rememberSaveable(saver = animatableSaver) { Animatable(0f) }
-    val swipeStateDictionary = tabRowState == TabRowState.Dictionary
-    val swipeStatePhrasebook = tabRowState == TabRowState.Phrasebook
-    LaunchedEffect(tabIsClicked) {
-        if (tabIsClicked) {
-            val targetValue = if (tabRowState != TabRowState.Dictionary) -widthPx else 0f
-            animatableOffsetX.animateTo(
-                targetValue = targetValue,
-                animationSpec = tween(200)
-            )
-            tabChanged(false)
-        }
-    }
-    pointerInput(swipeStateDictionary) {
-        if (swipeStateDictionary) {
-            val decay = splineBasedDecay<Float>(this)
-            coroutineScope {
-                while (true) {
-                    val velocityTracker = VelocityTracker()
-                    animatableOffsetX.stop()
-                    awaitPointerEventScope {
-                        val pointerId = awaitFirstDown(
-                            requireUnconsumed = false,
-                            pass = PointerEventPass.Initial
-                        )
-                        horizontalDrag(pointerId = pointerId.id) { change ->
-                            if (change.pressed && change.positionChange().y in -20f..20f) {
-                                onSwiped(false)
-                            }
-                            if (animatableOffsetX.isRunning) {
-                                change.consume()
-                            }
-                            launch {
-                                val targetValue =
-                                    if (animatableOffsetX.value + change.positionChange().x > 0) 0f
-                                    else animatableOffsetX.value + change.positionChange().x
-                                animatableOffsetX.snapTo(
-                                    targetValue = targetValue
-                                )
-                            }
-                            velocityTracker.addPosition(
-                                change.uptimeMillis,
-                                change.position
-                            )
-                        }
-                    }
-                    val velocity = tabsNormalizeVelocity(
-                        velocity = velocityTracker.calculateVelocity().x,
-                        tabRowState = tabRowState
-                    )
-                    val targetOffsetX = decay.calculateTargetValue(
-                        initialValue = animatableOffsetX.value,
-                        initialVelocity = velocity,
-                    )
-                    animatableOffsetX.updateBounds(
-                        lowerBound = -widthPx,
-                        upperBound = 0f
-                    )
-                    launch {
-                        if (velocity != 0f) {
-                            animatableOffsetX.animateDecay(
-                                initialVelocity = velocity,
-                                animationSpec = decay
-                            )
-                            onSwiped(false)
-                            onDictionarySwipe()
-                        } else {
-                            if (targetOffsetX.absoluteValue <= widthPx * 0.7) {
-                                animatableOffsetX.animateTo(
-                                    targetValue = 0f,
-                                    initialVelocity = velocity,
-                                    animationSpec = tween(durationMillis = 200)
-                                )
-                                onSwiped(true)
-                            } else {
-                                val targetValueOffsetX = -widthPx
-                                animatableOffsetX.animateTo(
-                                    targetValue = targetValueOffsetX,
-                                    animationSpec = tween(durationMillis = 200)
-                                )
-                                onSwiped(true)
-                                onDictionarySwipe()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-        .pointerInput(swipeStatePhrasebook) {
-            if (swipeStatePhrasebook) {
-                val decay = splineBasedDecay<Float>(this)
-                coroutineScope {
-                    while (true) {
-                        val velocityTracker = VelocityTracker()
-                        animatableOffsetX.stop()
-                        awaitPointerEventScope {
-                            val pointerId = awaitFirstDown(
-                                requireUnconsumed = false,
-                                pass = PointerEventPass.Initial
-                            )
-                            horizontalDrag(pointerId = pointerId.id) { change ->
-                                if (change.pressed && change.positionChange().y in -3f..3f) {
-                                    onSwiped(false)
-                                }
-                                if (animatableOffsetX.isRunning) {
-                                    change.consume()
-                                }
-                                launch {
-                                    val targetValue =
-                                        if (animatableOffsetX.value + change.positionChange().x < -widthPx) -widthPx
-                                        else animatableOffsetX.value + change.positionChange().x
-                                    animatableOffsetX.snapTo(
-                                        targetValue = targetValue
-                                    )
-                                }
-                                velocityTracker.addPosition(
-                                    change.uptimeMillis,
-                                    change.position
-                                )
-                            }
-                        }
-                        val velocity = tabsNormalizeVelocity(
-                            velocity = velocityTracker.calculateVelocity().x,
-                            tabRowState = tabRowState
-                        )
-                        val targetOffsetX = decay.calculateTargetValue(
-                            initialValue = animatableOffsetX.value,
-                            initialVelocity = velocity,
-                        )
-                        animatableOffsetX.updateBounds(
-                            lowerBound = -widthPx,
-                            upperBound = 0f
-                        )
-                        launch {
-                            if (velocity != 0f) {
-                                animatableOffsetX.animateDecay(
-                                    initialVelocity = velocity,
-                                    animationSpec = decay
-                                )
-                                onSwiped(true)
-                                onPhrasebookSwipe()
-                            } else {
-                                if (targetOffsetX.absoluteValue >= widthPx * 0.7) {
-                                    animatableOffsetX.animateTo(
-                                        targetValue = -widthPx,
-                                        initialVelocity = velocity,
-                                        animationSpec = tween(durationMillis = 200)
-                                    )
-                                    onSwiped(true)
-                                } else {
-                                    val targetValueOffsetX = 0f
-                                    animatableOffsetX.animateTo(
-                                        targetValue = targetValueOffsetX,
-                                        animationSpec = tween(durationMillis = 200)
-                                    )
-                                    onSwiped(true)
-                                    onPhrasebookSwipe()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        .offset { IntOffset(x = animatableOffsetX.value.roundToInt(), y = 0) }
-}
-
 fun dictionaryTabPager(): MeasureScope.(measurables: List<Measurable>, constraints: Constraints) -> MeasureResult {
     return { measurables, constraints ->
         val dictionaryPlaceable = measurables.first { it.layoutId == TabRowState.Dictionary }
@@ -435,36 +280,6 @@ fun dictionaryTabPager(): MeasureScope.(measurables: List<Measurable>, constrain
             phrasebookPlaceable.place(constraints.maxWidth, 0)
         }
     }
-}
-
-fun tabsNormalizeVelocity(velocity: Float, tabRowState: TabRowState): Float {
-    val normalizeVelocity: Float
-    when (tabRowState) {
-        TabRowState.Dictionary -> {
-            normalizeVelocity = when (if (velocity < 0) velocity else 0f) {
-                in -1000f..0f -> 0f
-                in -2000f..-1001f -> -6000f
-                in -5000f..-2001f -> -8000f
-                in -10000f..-5001f -> -10000f
-                in -15000f..-10001f -> -12000f
-                in -20000f..-15001f -> -13000f
-                else -> -14000f
-            }
-        }
-
-        TabRowState.Phrasebook -> {
-            normalizeVelocity = when (if (velocity > 0) velocity else 0f) {
-                in 0f..1000f -> 0f
-                in 1001f..2000f -> 6000f
-                in 2001f..5000f -> 8000f
-                in 5001f..10000f -> 10000f
-                in 10001f..15000f -> 12000f
-                in 15001f..20000f -> 13000f
-                else -> 14000f
-            }
-        }
-    }
-    return normalizeVelocity
 }
 
 enum class TabRowState {

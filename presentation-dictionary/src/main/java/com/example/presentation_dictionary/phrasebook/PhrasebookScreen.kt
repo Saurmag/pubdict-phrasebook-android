@@ -38,20 +38,17 @@ import com.example.presentation_dictionary.R
 fun Phrasebook(
     topics: List<PhrasebookItemModel>,
     onTopicClick: (Int) -> Unit,
-    pointEventEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(top = 8.dp, bottom = 32.dp, start = 32.dp, end = 32.dp),
-        userScrollEnabled = pointEventEnabled,
         modifier = modifier.imePadding()
     ) {
         items(topics) { topic: PhrasebookItemModel ->
             Topic(
                 topic = topic,
-                onTopicClick = { onTopicClick(topic.id) },
-                clickEnabled = pointEventEnabled
+                onTopicClick = { onTopicClick(topic.id) }
             )
         }
         item {
@@ -66,7 +63,6 @@ fun Phrasebook(
 fun Topic(
     topic: PhrasebookItemModel,
     onTopicClick: () -> Unit,
-    clickEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -77,7 +73,6 @@ fun Topic(
                     bounded = true,
                     radius = Dp.Unspecified
                 ),
-                enabled = clickEnabled
             ) { onTopicClick() }
     ) {
         Text(
@@ -158,8 +153,7 @@ fun TopicListPreview() {
                     countPhrase = 4
                 )
             ),
-            onTopicClick = {},
-            pointEventEnabled = true
+            onTopicClick = {}
         )
     }
 }
