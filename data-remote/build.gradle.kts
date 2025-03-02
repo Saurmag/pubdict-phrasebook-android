@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.data_repository"
+    namespace = "com.example.data_remote"
     compileSdk = Config.defaultCompileSdkVersion
 
     defaultConfig {

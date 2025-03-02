@@ -23,6 +23,9 @@ paging = "3.3.4"
 orbit = "9.0.0"
 activityCompose = "1.9.0"
 composeBom = "2024.04.00"
+protobuf = "0.9.4"
+protobuf-javalite = "4.29.3"
+protoc = "3.22.0"
 
 [libraries]
 androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -69,6 +72,8 @@ orbit-core = { group = "org.orbit-mvi", name = "orbit-core", version.ref = "orbi
 orbit-viewmodel = { group = "org.orbit-mvi", name = "orbit-viewmodel", version.ref = "orbit" }
 orbit-compose = { group = "org.orbit-mvi", name = "orbit-compose", version.ref = "orbit" }
 orbit-test = { group = "org.orbit-mvi", name = "orbit-test", version.ref = "orbit" }
+protobuf-javalite = { group = "com.google.protobuf", name = "protobuf-javalite", version.ref = "protobuf-javalite" }
+protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protoc" }
 
 [bundles]
 orbit = [
@@ -85,3 +90,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kapt" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobuf" }
