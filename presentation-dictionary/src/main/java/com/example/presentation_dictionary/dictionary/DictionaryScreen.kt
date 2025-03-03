@@ -123,7 +123,7 @@ internal fun DictionaryScreen(
     Scaffold(
         topBar = {
             when {
-                translationLanguageUiState.isLoading -> Loading()
+                translationLanguageUiState.isSelected -> Loading()
 
                 translationLanguageUiState.exception != null -> {
                     translationLanguageUiState.exception.localizedMessage?.let { Error(errorMessage = it) }
