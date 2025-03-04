@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,6 +45,7 @@ import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
@@ -109,7 +111,8 @@ fun PhrasebookLanguages(
         tranLanguage = {
             TranslationLanguage(
                 language = language,
-                tranLangState = tranLangState
+                tranLangState = tranLangState,
+                onTranslationLanguageClick = onTranslationLanguageClick
             )
         },
         tranLanguages = {
@@ -143,11 +146,11 @@ fun OriginLanguage(
                 shape = RoundedCornerShape(corner = CornerSize(24.dp)),
                 color = Color(0x99FFFFFF)
             )
-            .fillMaxSize()
     ) {
         Text(
             text = stringResource(id = originLang),
-            style = MaterialTheme.typography.bodyLarge
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
         )
     }
 }
@@ -163,7 +166,7 @@ fun ArrowIcon(
         modifier = modifier
             .clip(RoundedCornerShape(48.dp))
             .background(color = Color.White)
-            .fillMaxSize()
+            .size(48.dp)
     ) {
         Icon(
             painter = painterResource(id = resource),
@@ -176,6 +179,7 @@ fun ArrowIcon(
 fun TranslationLanguage(
     language: LanguageModel,
     tranLangState: State<TranslationLanguageState>,
+    onTranslationLanguageClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val rotation = remember {
@@ -193,41 +197,49 @@ fun TranslationLanguage(
                 )
             }
     }
-    Column(modifier) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start,
+        modifier = modifier
+            .clip(shape = RoundedCornerShape(corner = CornerSize(24.dp)),)
+            .background(
+                color = Color(0x99FFFFFF)
+            )
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    radius = Dp.Unspecified
+                ),
+                role = Role.Button
+            ) { onTranslationLanguageClick() }
+    ) {
+        Text(
+            text = language.title,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+        )
+        Box(
+            contentAlignment = Alignment.Center,
             modifier = Modifier
+                .padding(end = 12.dp, top = 12.dp, bottom = 12.dp)
                 .background(
                     shape = RoundedCornerShape(corner = CornerSize(24.dp)),
-                    color = Color(0x99FFFFFF)
+                    color = Color.Black
                 )
-                .fillMaxSize()
+                .size(24.dp)
         ) {
-            Text(
-                text = language.title,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(end = 16.dp)
-            )
-            Box(
-                contentAlignment = Alignment.Center,
+            Icon(
+                painter = painterResource(id = R.drawable.arrow_icon),
+                tint = Color.White,
+                contentDescription = null,
                 modifier = Modifier
-                    .background(
-                        shape = RoundedCornerShape(corner = CornerSize(24.dp)),
-                        color = Color.Black
-                    )
-                    .size(24.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.arrow_icon),
-                    tint = Color.White,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .graphicsLayer { rotationZ = rotation.value.toFloat() }
-                )
-            }
+                    .graphicsLayer { rotationZ = rotation.value.toFloat() }
+            )
         }
     }
+
 }
 
 @Composable
@@ -297,8 +309,9 @@ fun phrasebookLanguagesTopBarMeasure(): MeasureScope.(measurable: List<Measurabl
                     maxWidth = langWidth
                 )
             )
-        val translationLangs = measurable.first { it.layoutId == TopBarLayout.TRANSLATION_LANGUAGES }
-            .measure(constraints)
+        val translationLangs =
+            measurable.first { it.layoutId == TopBarLayout.TRANSLATION_LANGUAGES }
+                .measure(constraints)
 
         val layoutWidth = constraints.maxWidth
         val layoutHeight = translationLang.height + translationLangs.height

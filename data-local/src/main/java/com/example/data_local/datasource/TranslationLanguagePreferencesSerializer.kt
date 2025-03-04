@@ -8,7 +8,9 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object TranslationLanguagePreferencesSerializer : Serializer<TranslationLanguagePreferences> {
-    override val defaultValue: TranslationLanguagePreferences = TranslationLanguagePreferences.getDefaultInstance()
+    override val defaultValue: TranslationLanguagePreferences =
+        TranslationLanguagePreferences
+            .getDefaultInstance()
 
     override suspend fun readFrom(input: InputStream): TranslationLanguagePreferences {
         try {

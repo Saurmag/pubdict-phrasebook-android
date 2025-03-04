@@ -136,7 +136,7 @@ class DictionaryViewModel(
             .collect { languagesResult ->
                 languagesResult.onSuccess {
                     val language = it.translationLanguage.mapToLanguageModel()
-                    reduce { state.copy(tranLanguage = state.tranLanguage.copy(isSelected = true, language = language)) }
+                    reduce { state.copy(tranLanguage = state.tranLanguage.copy(isSelected = false, language = language)) }
                 }
             }
     }
