@@ -4,7 +4,6 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class TranslationLanguageUiState(
-    val isSelected: Boolean = false,
     val exception: Throwable? = null,
     val language: LanguageModel? = null
 )

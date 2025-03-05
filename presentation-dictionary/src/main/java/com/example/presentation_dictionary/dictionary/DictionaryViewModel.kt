@@ -55,7 +55,7 @@ class DictionaryViewModel(
             initialState = DictionaryUiState(
                 wordsOfDay = WordOfDayUiState(isLoading = true),
                 phrasebook = PhrasebookUiState(isLoading = true),
-                tranLanguage = TranslationLanguageUiState(isSelected = true),
+                tranLanguage = TranslationLanguageUiState(),
                 tranLanguages = TranslationLanguagesUiState(isLoading = true)
             ),
         ) {
@@ -136,7 +136,7 @@ class DictionaryViewModel(
             .collect { languagesResult ->
                 languagesResult.onSuccess {
                     val language = it.translationLanguage.mapToLanguageModel()
-                    reduce { state.copy(tranLanguage = state.tranLanguage.copy(isSelected = false, language = language)) }
+                    reduce { state.copy(tranLanguage = state.tranLanguage.copy(language = language)) }
                 }
             }
     }

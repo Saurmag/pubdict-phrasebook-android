@@ -48,7 +48,6 @@ import com.example.presentation_common.design.showToast
 import com.example.presentation_dictionary.R
 import com.example.presentation_dictionary.design.DictionarySearchBar
 import com.example.presentation_dictionary.design.DictionaryTabs
-import com.example.presentation_dictionary.design.language_top_bar.LanguageConfigurationTopBar
 import com.example.presentation_dictionary.design.language_top_bar.LanguageTopBar
 import com.example.presentation_dictionary.design.swipeablecard.WordsOfDayCardPager
 import com.example.presentation_dictionary.phrasebook.PhrasebookUiState
@@ -124,8 +123,6 @@ internal fun DictionaryScreen(
     Scaffold(
         topBar = {
             when {
-                translationLanguageUiState.isSelected -> Loading()
-
                 translationLanguageUiState.exception != null -> {
                     translationLanguageUiState.exception.localizedMessage?.let { Error(errorMessage = it) }
                 }
