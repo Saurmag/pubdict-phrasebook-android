@@ -35,7 +35,7 @@ fun TranslationLanguageList(
     onTranslationLanguageItemClick: (LanguageModel) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val horizontalDividerModifier = Modifier.width(width = LanguageSize.Medium.width)
+    val horizontalDividerModifier = Modifier.width(width = LanguageSize.MediumExpanded.width)
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -95,7 +95,7 @@ fun TranslationLanguageListItem(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Start,
         modifier = modifier
-            .size(width = LanguageSize.Medium.width, height = LanguageSize.Medium.height)
+            .size(width = LanguageSize.MediumExpanded.width, height = LanguageSize.Medium.height)
             .background(
                 color = Color.White,
             )

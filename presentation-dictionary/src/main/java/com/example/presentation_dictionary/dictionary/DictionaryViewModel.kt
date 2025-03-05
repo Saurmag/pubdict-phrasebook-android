@@ -55,13 +55,13 @@ class DictionaryViewModel(
             initialState = DictionaryUiState(
                 wordsOfDay = WordOfDayUiState(isLoading = true),
                 phrasebook = PhrasebookUiState(isLoading = true),
-                tranLanguage = TranslationLanguageUiState(isLoading = true),
+                tranLanguage = TranslationLanguageUiState(),
                 tranLanguages = TranslationLanguagesUiState(isLoading = true)
             ),
         ) {
             viewModelScope.launch {
-                launch { getTranslationLanguage() }
                 launch { getTranslationLanguages() }
+                launch { getTranslationLanguage() }
                 launch { getWordOfDay() }
                 launch { getPhrasebook() }
                 launch { getWordsFlow() }
@@ -136,18 +136,17 @@ class DictionaryViewModel(
             .collect { languagesResult ->
                 languagesResult.onSuccess {
                     val language = it.translationLanguage.mapToLanguageModel()
-                    reduce { state.copy(tranLanguage = state.tranLanguage.copy(isLoading = false, language = language)) }
+                    reduce { state.copy(tranLanguage = state.tranLanguage.copy(language = language)) }
                 }
             }
-
     }
 
     private suspend fun getTranslationLanguages() = subIntent {
         val request = GetTranslateLanguageListUseCase.Request(BuildConfig.originLanguageIso)
         tranLanguagesUseCase.execute(request)
             .collect { languagesResult ->
-                languagesResult.onSuccess {
-                    val languages = it.translateLanguageList.map { language -> language.mapToLanguageModel() }
+                languagesResult.onSuccess { response ->
+                    val languages = response.translateLanguageList.map { language -> language.mapToLanguageModel() }
                     reduce { state.copy(tranLanguages = state.tranLanguages.copy(isLoading = false, languages = languages)) }
                 }
             }
