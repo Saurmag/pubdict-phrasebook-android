@@ -12,6 +12,12 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
+private val Context.dataStore:
+        DataStore<TranslationLanguagePreferences> by dataStore(
+    fileName = "translation_language.proto",
+    serializer = TranslationLanguagePreferencesSerializer
+)
+
 @Module
 class PersistenceModule {
 
@@ -21,10 +27,4 @@ class PersistenceModule {
         LocalTranslationLanguageDataSourceImpl(
             context.dataStore
         )
-
-    private val Context.dataStore:
-            DataStore<TranslationLanguagePreferences> by dataStore(
-                fileName = "translation_language.proto",
-                serializer = TranslationLanguagePreferencesSerializer
-            )
 }
